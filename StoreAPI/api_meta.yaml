@@ -1,0 +1,6 @@
+deploy:
+  import:
+    preserveProvider: true
+    update: true
+name: OnlineStore
+version: 1.0.0

@@ -17,18 +17,21 @@ pipeline {
         stage('Setup Environment for APICTL') {
             steps {
                 sh '''#!/bin/bash
-                ls -al
-                echo $PATH
                 envs=$(apictl get envs --format "{{.Name}}")
                 if [ -z "$envs" ]; 
                 then 
                     echo "No environment configured. Setting dev environment.."
-                    apictl add env dev --apim https://${APIM_HOST}:9443 
+                    apictl add env dev --apim https://${APIM_HOST}:9443
+                    apictl add env prod --apim https://${APIM_HOST}:9444 
                 else
                     echo "Environments :"$envs
                     if [[ $envs != *"dev"* ]]; then
                     echo "Dev environment is not configured. Setting dev environment.."
                     apictl add env dev --apim https://${APIM_HOST}:9443 
+                    fi
+                    if [[ $envs != *"prod"* ]]; then
+                    echo "Prod environment is not configured. Setting prod environment.."
+                    apictl add env prod --apim https://${APIM_HOST}:9444 
                     fi
                 fi
                 '''
@@ -52,11 +55,21 @@ pipeline {
                 '''
             }
         }
+
+        stage('Deploy APIs To "Prod" Environment') {
+            steps {
+                sh """
+                apictl login prod -u admin -p admin -k
+                apictl vcs deploy -e prod
+                """
+            }
+        }
     }
     post { 
         always { 
             sh '''
             apictl logout dev
+            apictl logout prod
             '''
         }
     }

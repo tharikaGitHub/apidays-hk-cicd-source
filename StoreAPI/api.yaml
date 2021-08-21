@@ -1,0 +1,26 @@
+type: api
+version: v4.0.0
+data:
+  name: OnlineStore
+  description: This is a server online store
+  context: /OnlineStore
+  version: 1.0.0
+  provider: admin
+  lifeCycleStatus: CREATED
+  isRevision: false
+  revisionId: 0
+  type: HTTP
+  transport:
+  - http
+  - https
+  policies:
+  - Unlimited
+  visibility: PUBLIC
+  endpointConfig:
+    endpoint_type: http
+    production_endpoints:
+      url: http://localhost:8080
+    sandbox_endpoints:
+      url: http://localhost:8081
+  endpointImplementationType: ENDPOINT
+  websubSubscriptionConfiguration: null
