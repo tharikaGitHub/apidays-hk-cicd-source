@@ -17,16 +17,17 @@ pipeline {
         stage('Setup Environment for APICTL') {
             steps {
                 sh '''#!/bin/bash
-                envs=$(sh /home/ec2-user/apictl/apictl get envs --format "{{.Name}}")
+                cd /home/ec2-user/apictl
+                envs=$(./apictl get envs --format "{{.Name}}")
                 if [ -z "$envs" ]; 
                 then 
                     echo "No environment configured. Setting dev environment.."
-                    sh /home/ec2-user/apictl/apictl add env dev --apim https://${APIM_HOST}:9443 
+                    ./apictl add env dev --apim https://${APIM_HOST}:9443 
                 else
                     echo "Environments :"$envs
                     if [[ $envs != *"dev"* ]]; then
                     echo "Dev environment is not configured. Setting dev environment.."
-                    sh /home/ec2-user/apictl/apictl add env dev --apim https://${APIM_HOST}:9443 
+                    ./apictl add env dev --apim https://${APIM_HOST}:9443 
                     fi
                 fi
                 '''
