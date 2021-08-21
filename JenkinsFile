@@ -17,18 +17,18 @@ pipeline {
         stage('Setup Environment for APICTL') {
             steps {
                 sh '''#!/bin/bash
-                sudo su
-                cd /home/ec2-user/apictl
-                envs=$(./apictl get envs --format "{{.Name}}")
+                ls -al
+                echo $PATH
+                envs=$(apictl get envs --format "{{.Name}}")
                 if [ -z "$envs" ]; 
                 then 
                     echo "No environment configured. Setting dev environment.."
-                    ./apictl add env dev --apim https://${APIM_HOST}:9443 
+                    apictl add env dev --apim https://${APIM_HOST}:9443 
                 else
                     echo "Environments :"$envs
                     if [[ $envs != *"dev"* ]]; then
                     echo "Dev environment is not configured. Setting dev environment.."
-                    ./apictl add env dev --apim https://${APIM_HOST}:9443 
+                    apictl add env dev --apim https://${APIM_HOST}:9443 
                     fi
                 fi
                 '''
@@ -38,8 +38,8 @@ pipeline {
         stage('Deploy APIs To "Dev" Environment') {
             steps {
                 sh '''
-                sh /home/ec2-user/apictl/apictl login dev -u admin -p admin -k
-                sh /home/ec2-user/apictl/apictl vcs deploy -e dev
+                apictl login dev -u admin -p admin -k
+                apictl vcs deploy -e dev
                 '''
             }
         }
@@ -56,7 +56,7 @@ pipeline {
     post { 
         always { 
             sh '''
-            sh /home/ec2-user/apictl/apictl logout dev
+            apictl logout dev
             '''
         }
     }
