@@ -16,7 +16,7 @@ pipeline {
 
         stage('Setup Environment for APICTL') {
             steps {
-                sh """#!/bin/bash
+                sh '''#!/bin/bash
                 envs=$(apictl get envs --format "{{.Name}}")
                 if [ -z "$envs" ]; 
                 then 
@@ -29,33 +29,33 @@ pipeline {
                     apictl add env dev --apim https://${APIM_HOST}:9443 
                     fi
                 fi
-                """
+                '''
             }
         }
 
         stage('Deploy APIs To "Dev" Environment') {
             steps {
-                sh """
+                sh '''
                 apictl login dev -u admin -p admin -k
                 apictl vcs deploy -e dev
-                """
+                '''
             }
         }
 
         stage('Run Tests in "Dev" Environment') {
             steps {
-                sh """#!/bin/bash
+                sh '''#!/bin/bash
                 testfiles=\$(find tests -iname "*.sh")
                 for i in \$testfiles ; do bash \$i; done
-                """
+                '''
             }
         }
     }
     post { 
         always { 
-            sh """
+            sh '''
             apictl logout dev
-            """
+            '''
         }
     }
 }
