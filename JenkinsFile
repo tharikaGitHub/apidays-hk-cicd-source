@@ -5,6 +5,9 @@ pipeline {
             label 'master'
         }
     }
+    environment {
+        PATH = '/home/ec2-user/apictl:$PATH'
+    }
     options {
         buildDiscarder logRotator( 
                     daysToKeepStr: '16', 
