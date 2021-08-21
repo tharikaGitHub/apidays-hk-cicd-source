@@ -17,6 +17,8 @@ pipeline {
         stage('Setup Environment for APICTL') {
             steps {
                 sh '''#!/bin/bash
+                apictl remove env dev
+                apictl remove env prod
                 envs=$(apictl get envs --format "{{.Name}}")
                 if [ -z "$envs" ]; 
                 then 
