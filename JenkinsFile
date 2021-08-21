@@ -5,10 +5,6 @@ pipeline {
             label 'master'
         }
     }
-    environment { 
-        PATH = "/root/apictl:$PATH"
-        ADMIN = credentials('admin_user')
-    }
     options {
         buildDiscarder logRotator( 
                     daysToKeepStr: '16', 
@@ -21,9 +17,17 @@ pipeline {
         stage('Setup Environment for APICTL') {
             steps {
                 sh """#!/bin/bash
-                ENVCOUNT=\$(apictl list envs --format {{.}} | wc -l)
-                if [ "\$ENVCOUNT" == "0" ]; then
-                    apictl add-env -e dev --apim https://localhost:9443
+                envs=$(apictl get envs --format "{{.Name}}")
+                if [ -z "$envs" ]; 
+                then 
+                    echo "No environment configured. Setting dev environment.."
+                    apictl add env dev --apim https://${APIM_HOST}:9443 
+                else
+                    echo "Environments :"$envs
+                    if [[ $envs != *"dev"* ]]; then
+                    echo "Dev environment is not configured. Setting dev environment.."
+                    apictl add env dev --apim https://${APIM_HOST}:9443 
+                    fi
                 fi
                 """
             }
@@ -32,7 +36,7 @@ pipeline {
         stage('Deploy APIs To "Dev" Environment') {
             steps {
                 sh """
-                apictl login dev -u \$ADMIN_USR -p \$ADMIN_PSW -k
+                apictl login dev -u admin -p admin -k
                 apictl vcs deploy -e dev
                 """
             }
