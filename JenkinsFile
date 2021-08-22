@@ -5,7 +5,6 @@ pipeline {
             label 'master'
         }
     }
-    tools {nodejs "Node"}
     options {
         buildDiscarder logRotator( 
                     daysToKeepStr: '16', 
@@ -22,6 +21,7 @@ pipeline {
                 apictl remove env dev
                 apictl remove env prod
                 apictl set --vcs-source-repo-path ./
+                apictl set --vcs-config-path /var/lib/jenkins/workspace/gitconfig
                 envs=$(apictl get envs --format "{{.Name}}")
                 if [ -z "$envs" ]; 
                 then 
@@ -43,7 +43,7 @@ pipeline {
             }
         }
 
-        stage('Deploy APIs To the "Dev" Environment') {
+        stage('Bundle deployment artifacts') {
             steps {
                 sh '''#!/bin/bash
                 apictl login dev -u admin -p admin -k
@@ -58,14 +58,89 @@ pipeline {
                     for i in "${apiArray[@]}"
                     do
                         echo "$i"
-                        apictl bundle -s $i -d ../../.wso2apictl/exported/apis
+                        apictl bundle -s $i -d upload
+                        # get the artifact deploy version from the meta.yaml
+                        versionFull=$(cat $i/meta.yaml)
+                        versionId=(${versionFull//: / })
+                        version=${versionId[1]}
+                        for file in upload/*; do
+                            echo "Uploading "$file
+                            curl -u ${ARTIFACTORY_USER}:${ARTIFACTORY_PWD} -X PUT https://${ARTIFACTORY_HOST}/artifactory/${ARTIFACTORY_REPO}/$i/$version/ -T $file
+                        done
+                        rm -rf upload
                     done
-                    apictl vcs deploy -e dev -k
-                    rm -rf ./upload
                 fi
                 '''
             }
         }
+
+        stage('Update local repo') {
+            steps {
+                sh '''#!/bin/bash
+                idFull=$(cat vcs.yaml)
+                arrId=(${idFull//: / })
+                repoId=${arrId[1]}
+                head=$(git rev-parse HEAD)
+                rm /var/lib/jenkins/workspace/gitconfig
+                echo "
+                    repos:
+                    $repoId:
+                        environments:
+                        dev:
+                            lastAttemptedRev: $head" >> /var/lib/jenkins/workspace/gitconfig
+                                    '''
+            }
+        }        
+
+        //Working
+        // stage('Deploy APIs To the "Dev" Environment') {
+        //     steps {
+        //         sh '''#!/bin/bash
+        //         apictl login dev -u admin -p admin -k
+        //         apis=$(apictl vcs status -e dev --format="{{ jsonPretty . }}" | jq -r '.API | .[] | .NickName')
+        //         mkdir -p upload
+        //         if [ -z "$apis" ]; 
+        //         then 
+        //             echo "======== No API Changes detected =========="; 
+        //         else 
+        //             echo "Updated APIs :"$apis
+        //             apiArray=($apis)
+        //             for i in "${apiArray[@]}"
+        //             do
+        //                 echo "$i"
+        //                 apictl bundle -s $i -d ../../.wso2apictl/exported/apis
+        //             done
+        //             apictl vcs deploy -e dev -k
+        //             rm -rf ./upload
+        //         fi
+        //         '''
+        //     }
+        // }
+
+        //Working
+        // stage('Deploy APIs To the "Dev" Environment') {
+        //     steps {
+        //         sh '''#!/bin/bash
+        //         apictl login dev -u admin -p admin -k
+        //         apis=$(apictl vcs status -e dev --format="{{ jsonPretty . }}" | jq -r '.API | .[] | .NickName')
+        //         mkdir -p upload
+        //         if [ -z "$apis" ]; 
+        //         then 
+        //             echo "======== No API Changes detected =========="; 
+        //         else 
+        //             echo "Updated APIs :"$apis
+        //             apiArray=($apis)
+        //             for i in "${apiArray[@]}"
+        //             do
+        //                 echo "$i"
+        //                 apictl bundle -s $i -d ../../.wso2apictl/exported/apis
+        //             done
+        //             apictl vcs deploy -e dev -k
+        //             rm -rf ./upload
+        //         fi
+        //         '''
+        //     }
+        // }
 
         // stage('Build api bundles') {
         //     steps {
@@ -98,38 +173,31 @@ pipeline {
         //     }
         // }
 
-        // stage('Deploy APIs To "Dev" Environment') {
+
+        // stage('Run Tests in "Dev" Environment') {
         //     steps {
-        //         sh '''
-        //         apictl login dev -u admin -p admin -k
-        //         apictl vcs deploy -e dev -k
+        //         sh '''#!/bin/bash
+        //         testfiles=\$(find tests -iname "*.sh")
+        //         for i in \$testfiles ; do bash \$i; done
         //         '''
         //     }
         // }
 
-        stage('Run Tests in "Dev" Environment') {
-            steps {
-                sh '''#!/bin/bash
-                testfiles=\$(find tests -iname "*.sh")
-                for i in \$testfiles ; do bash \$i; done
-                '''
-            }
-        }
-
-        stage('Deploy APIs To "Prod" Environment') {
-            steps {
-                sh """
-                apictl login prod -u admin -p admin -k
-                apictl vcs deploy -e prod -k
-                """
-            }
-        }
+        // stage('Deploy APIs To "Prod" Environment') {
+        //     steps {
+        //         sh """
+        //         apictl login prod -u admin -p admin -k
+        //         apictl vcs deploy -e prod -k
+        //         """
+        //     }
+        // }
     }
+
+    //apictl logout prod -k
     post { 
         always { 
             sh '''
             apictl logout dev -k
-            apictl logout prod -k
             '''
         }
     }
