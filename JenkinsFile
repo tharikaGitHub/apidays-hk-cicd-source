@@ -57,7 +57,7 @@ pipeline {
                     for i in "${apiArray[@]}"
                     do
                         echo "$i"
-                        apictl bundle -s $i -d upload
+                        apictl bundle -s $i -d ./upload
                         # import the artifact
                         message=$(apictl import api -f ./upload/$i.zip -e dev --update -k)
                         if [ "$message" = "Successfully imported API." ]; then
