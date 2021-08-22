@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "de6ef808-4e04-415e-9b9c-51d279d7dd4b",
+		"_postman_id": "a53efcd1-6c18-4fff-88d4-3874437a4922",
 		"name": "OnlineStore",
 		"description": "This is a server online store",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -28,7 +28,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/products?start=offi&count=offi&params=offi",
+							"raw": "{{baseUrl}}/products?start=3&count=4&params=theproduct",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -38,15 +38,15 @@
 							"query": [
 								{
 									"key": "start",
-									"value": "offi"
+									"value": "3"
 								},
 								{
 									"key": "count",
-									"value": "offi"
+									"value": "4"
 								},
 								{
 									"key": "params",
-									"value": "offi"
+									"value": "theproduct"
 								}
 							]
 						},
@@ -59,7 +59,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}/products?start=offi&count=offi&params=offi",
+									"raw": "{{baseUrl}}/products?start=elit labore est id cillum&count=elit labore est id cillum&params=elit labore est id cillum",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -69,15 +69,15 @@
 									"query": [
 										{
 											"key": "start",
-											"value": "offi"
+											"value": "elit labore est id cillum"
 										},
 										{
 											"key": "count",
-											"value": "offi"
+											"value": "elit labore est id cillum"
 										},
 										{
 											"key": "params",
-											"value": "offi"
+											"value": "elit labore est id cillum"
 										}
 									]
 								}
@@ -92,7 +92,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n \"list\": [\n  {\n   \"id\": 46200470,\n   \"name\": \"enim ea\",\n   \"description\": \"aliquip labore tempor Excepteur ea\",\n   \"price\": \"culpa tempor proident sunt\"\n  },\n  {\n   \"id\": 54572675,\n   \"name\": \"occaecat ea Lorem\",\n   \"description\": \"cillum exercitation in\",\n   \"price\": \"deserunt qui\"\n  }\n ],\n \"total\": 30490202,\n \"offset\": 80148618,\n \"limit\": 98071615\n}"
+							"body": "{\n \"list\": [\n  {\n   \"id\": 66306533,\n   \"name\": \"do laboris quis\",\n   \"description\": \"Excepteur fugiat eu in aliqua\",\n   \"price\": \"incididunt dolor exercitation et sunt\"\n  },\n  {\n   \"id\": 14658096,\n   \"name\": \"amet et in pariatur\",\n   \"description\": \"quis in cupidatat nulla\",\n   \"price\": \"non quis velit fugiat\"\n  }\n ],\n \"total\": -17983572,\n \"offset\": 78546414,\n \"limit\": -37420333\n}"
 						}
 					]
 				},
@@ -112,6 +112,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -121,7 +131,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"id\": -39562377,\n    \"name\": \"veniam amet occaecat\",\n    \"description\": \"tempor cupidatat\",\n    \"price\": \"reprehenderit nisi amet\"\n}"
+							"raw": "{\n    \"id\": 3203146,\n    \"name\": \"irure ullamco\",\n    \"description\": \"reprehenderit ut eiusmod\",\n    \"price\": \"eu nisi\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/products",
@@ -142,7 +152,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"id\": -39562377,\n    \"name\": \"veniam amet occaecat\",\n    \"description\": \"tempor cupidatat\",\n    \"price\": \"reprehenderit nisi amet\"\n}"
+									"raw": "{\n    \"id\": 3203146,\n    \"name\": \"irure ullamco\",\n    \"description\": \"reprehenderit ut eiusmod\",\n    \"price\": \"eu nisi\"\n}"
 								},
 								"url": {
 									"raw": "{{baseUrl}}/products",
@@ -164,7 +174,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n \"id\": -39562377,\n \"name\": \"veniam amet occaecat\",\n \"description\": \"tempor cupidatat\",\n \"price\": \"reprehenderit nisi amet\"\n}"
+							"body": "{\n \"id\": 3203146,\n \"name\": \"irure ullamco\",\n \"description\": \"reprehenderit ut eiusmod\",\n \"price\": \"eu nisi\"\n}"
 						},
 						{
 							"name": "Bad Request.\nInvalid request or validation error.\n",
@@ -173,7 +183,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"id\": -39562377,\n    \"name\": \"veniam amet occaecat\",\n    \"description\": \"tempor cupidatat\",\n    \"price\": \"reprehenderit nisi amet\"\n}"
+									"raw": "{\n    \"id\": 3203146,\n    \"name\": \"irure ullamco\",\n    \"description\": \"reprehenderit ut eiusmod\",\n    \"price\": \"eu nisi\"\n}"
 								},
 								"url": {
 									"raw": "{{baseUrl}}/products",
@@ -195,7 +205,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n \"code\": 24415163,\n \"message\": \"velit in est\",\n \"description\": \"adipisicing dolor officia nisi labore\"\n}"
+							"body": "{\n \"code\": -43171229,\n \"message\": \"et mollit tempor\",\n \"description\": \"enim reprehenderit\"\n}"
 						},
 						{
 							"name": "Unsupported Media Type.\nThe entity of the request was in a not supported format.\n",
@@ -204,7 +214,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"id\": -39562377,\n    \"name\": \"veniam amet occaecat\",\n    \"description\": \"tempor cupidatat\",\n    \"price\": \"reprehenderit nisi amet\"\n}"
+									"raw": "{\n    \"id\": 3203146,\n    \"name\": \"irure ullamco\",\n    \"description\": \"reprehenderit ut eiusmod\",\n    \"price\": \"eu nisi\"\n}"
 								},
 								"url": {
 									"raw": "{{baseUrl}}/products",
@@ -226,7 +236,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n \"code\": 24415163,\n \"message\": \"velit in est\",\n \"description\": \"adipisicing dolor officia nisi labore\"\n}"
+							"body": "{\n \"code\": -43171229,\n \"message\": \"et mollit tempor\",\n \"description\": \"enim reprehenderit\"\n}"
 						}
 					]
 				},
@@ -246,6 +256,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -260,7 +280,7 @@
 							"variable": [
 								{
 									"key": "productId",
-									"value": "offi",
+									"value": "productId1",
 									"description": "(Required) "
 								}
 							]
@@ -299,7 +319,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n \"id\": -39562377,\n \"name\": \"veniam amet occaecat\",\n \"description\": \"tempor cupidatat\",\n \"price\": \"reprehenderit nisi amet\"\n}"
+							"body": "{\n \"id\": 3203146,\n \"name\": \"irure ullamco\",\n \"description\": \"reprehenderit ut eiusmod\",\n \"price\": \"eu nisi\"\n}"
 						},
 						{
 							"name": "Not Found\nInvalid product Id.\n",
@@ -332,7 +352,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n \"code\": 24415163,\n \"message\": \"velit in est\",\n \"description\": \"adipisicing dolor officia nisi labore\"\n}"
+							"body": "{\n \"code\": -43171229,\n \"message\": \"et mollit tempor\",\n \"description\": \"enim reprehenderit\"\n}"
 						},
 						{
 							"name": "Internal Server Error\nError while getting product\n",
@@ -365,18 +385,41 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n \"code\": 24415163,\n \"message\": \"velit in est\",\n \"description\": \"adipisicing dolor officia nisi labore\"\n}"
+							"body": "{\n \"code\": -43171229,\n \"message\": \"et mollit tempor\",\n \"description\": \"enim reprehenderit\"\n}"
 						}
 					]
 				}
 			]
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "https://3.15.18.64:8243/OnlineStore/1.0.0",
-			"type": "string"
+			"value": "https://3.15.18.64:8243/OnlineStore/1.0.0"
+		},
+		{
+			"key": "token",
+			"value": ""
 		}
 	]
 }
