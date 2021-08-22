@@ -57,7 +57,7 @@ pipeline {
                     for i in "${apiArray[@]}"
                     do
                         echo "$i"
-                        apictl bundle -s $i
+                        apictl bundle -s $i -d ../../.wso2apictl/exported/apis
                     done
                     apictl vcs deploy -e dev -k
                     rm -rf ./upload
