@@ -5,6 +5,7 @@ pipeline {
             label 'master'
         }
     }
+    tools {nodejs "Node"}
     options {
         buildDiscarder logRotator( 
                     daysToKeepStr: '16', 
