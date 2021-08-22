@@ -42,7 +42,7 @@ pipeline {
             }
         }
 
-        stage('Build api bundles') {
+        stage('Deploy APIs To "Dev" Environment') {
             steps {
                 sh '''#!/bin/bash
                 apictl login dev -u admin -p admin -k
