@@ -51,7 +51,7 @@ pipeline {
                 mkdir -p upload
                 if [ -z "$apis" ]; 
                 then 
-                    echo "======== No API Changes detected =========="; 
+                    echo "========= No API Changes detected =========="; 
                 else 
                     echo "Updated APIs :"$apis
                     apiArray=($apis)
