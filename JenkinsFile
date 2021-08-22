@@ -46,7 +46,6 @@ pipeline {
             steps {
                 sh '''#!/bin/bash
                 apictl login dev -u admin -p admin -k
-                apictl vcs status -e dev --format="{{ jsonPretty . }}"
                 apis=$(apictl vcs status -e dev --format="{{ jsonPretty . }}" | jq -r '.API | .[] | .NickName')
                 mkdir -p upload
                 if [ -z "$apis" ]; 
@@ -58,20 +57,45 @@ pipeline {
                     for i in "${apiArray[@]}"
                     do
                         echo "$i"
-                        apictl bundle -s $i -d ./upload
-                        # import the artifact
-                        message=$(apictl import api -f ./upload/$i.zip -e dev --update -k)
-                        if [ "$message" = "Successfully imported API." ]; then
-                            echo "Successfully imported API."
-                        else
-                            echo $message
-                        fi
+                        apictl bundle -s $i
                     done
+                    apictl vcs deploy -e dev -k
                     rm -rf ./upload
                 fi
                 '''
             }
         }
+
+        // stage('Build api bundles') {
+        //     steps {
+        //         sh '''#!/bin/bash
+        //         apictl login dev -u admin -p admin -k
+        //         apictl vcs status -e dev --format="{{ jsonPretty . }}"
+        //         apis=$(apictl vcs status -e dev --format="{{ jsonPretty . }}" | jq -r '.API | .[] | .NickName')
+        //         mkdir -p upload
+        //         if [ -z "$apis" ]; 
+        //         then 
+        //             echo "======== No API Changes detected =========="; 
+        //         else 
+        //             echo "Updated APIs :"$apis
+        //             apiArray=($apis)
+        //             for i in "${apiArray[@]}"
+        //             do
+        //                 echo "$i"
+        //                 apictl bundle -s $i -d ./upload
+        //                 # import the artifact
+        //                 message=$(apictl import api -f ./upload/$i.zip -e dev --update -k)
+        //                 if [ "$message" = "Successfully imported API." ]; then
+        //                     echo "Successfully imported API."
+        //                 else
+        //                     echo $message
+        //                 fi
+        //             done
+        //             rm -rf ./upload
+        //         fi
+        //         '''
+        //     }
+        // }
 
         // stage('Deploy APIs To "Dev" Environment') {
         //     steps {
