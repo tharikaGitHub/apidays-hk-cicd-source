@@ -46,9 +46,8 @@ pipeline {
             steps {
                 sh '''#!/bin/bash
                 apictl login dev -u admin -p admin -k
-                apictl vcs status -e dev
+                apictl vcs status -e dev --format="{{ jsonPretty . }}"
                 apis=$(apictl vcs status -e dev --format="{{ jsonPretty . }}" | jq -r '.API | .[] | .NickName')
-                rm -rf ./upload
                 mkdir -p upload
                 if [ -z "$apis" ]; 
                 then 
@@ -104,8 +103,8 @@ pipeline {
     post { 
         always { 
             sh '''
-            apictl logout dev
-            apictl logout prod
+            apictl logout dev -k
+            apictl logout prod -k
             '''
         }
     }
