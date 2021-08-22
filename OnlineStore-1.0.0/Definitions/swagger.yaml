@@ -114,7 +114,7 @@ paths:
     get:
       description: Get a Product
       parameters:
-       in: path
+      - in: path
         name: productId
         required: true
         schema:
