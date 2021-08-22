@@ -47,6 +47,7 @@ pipeline {
                 sh '''#!/bin/bash
                 apictl login dev -u admin -p admin -k
                 apis=$(apictl vcs status -e dev --format="{{ jsonPretty . }}" | jq -r '.API | .[] | .NickName')
+                rm -rf ./upload
                 mkdir -p upload
                 if [ -z "$apis" ]; 
                 then 
