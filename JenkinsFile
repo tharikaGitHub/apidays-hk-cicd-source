@@ -17,52 +17,50 @@ pipeline {
         stage('Setup Environment for APICTL') {
             steps {
                 sh '''#!/bin/bash
-                ls -al
-                apictl remove env dev
-                apictl remove env prod
-                apictl set --vcs-source-repo-path ./
+                apictl set --vcs-source-repo-path /var/lib/jenkins/workspace/CICD-Dev_dev
                 apictl set --vcs-config-path /var/lib/jenkins/workspace/gitconfig
                 envs=$(apictl get envs --format "{{.Name}}")
                 if [ -z "$envs" ]; 
                 then 
-                    echo "No environment configured. Setting dev environment.."
+                    echo "No environments configured. Setting the dev environment.."
                     apictl add env dev --apim https://${APIM_HOST}:9443
-                    apictl add env prod --apim https://${APIM_HOST}:9444 
                 else
                     echo "Environments :"$envs
                     if [[ $envs != *"dev"* ]]; then
-                    echo "Dev environment is not configured. Setting dev environment.."
+                    echo "Dev environment is not configured. Setting the dev environment.."
                     apictl add env dev --apim https://${APIM_HOST}:9443 
-                    fi
-                    if [[ $envs != *"prod"* ]]; then
-                    echo "Prod environment is not configured. Setting prod environment.."
-                    apictl add env prod --apim https://${APIM_HOST}:9444 
                     fi
                 fi
                 '''
             }
         }
 
-        stage('Bundle deployment artifacts') {
+        stage('Bundle and upload deployment artifacts') {
             steps {
                 sh '''#!/bin/bash
+                # Login to the dev environment
                 apictl login dev -u admin -p admin -k
+                # Check status of changed projects
                 apis=$(apictl vcs status -e dev --format="{{ jsonPretty . }}" | jq -r '.API | .[] | .NickName')
                 mkdir -p upload
                 if [ -z "$apis" ]; 
                 then 
-                    echo "========= No API Changes detected =========="; 
+                    echo "========== No API Changes detected =========="; 
                 else 
                     echo "Updated APIs :"$apis
                     apiArray=($apis)
                     for i in "${apiArray[@]}"
                     do
                         echo "$i"
+                        # Bundle the api artifacts to upload to artifactory
                         apictl bundle -s $i -d upload
-                        # get the artifact deploy version from the meta.yaml
+
+                        # Get the artifact deploy version from the meta.yaml
                         versionFull=$(cat $i/meta.yaml)
                         versionId=(${versionFull//: / })
                         version=${versionId[1]}
+
+                        # Upload the file to artifactory
                         for file in upload/*; do
                             echo "Uploading "$file
                             curl -u ${ARTIFACTORY_USER}:${ARTIFACTORY_PWD} -X PUT https://${ARTIFACTORY_HOST}/artifactory/${ARTIFACTORY_REPO}/$i/$version/ -T $file
@@ -91,112 +89,12 @@ pipeline {
                                     '''
             }
         }        
-
-        //Working
-        // stage('Deploy APIs To the "Dev" Environment') {
-        //     steps {
-        //         sh '''#!/bin/bash
-        //         apictl login dev -u admin -p admin -k
-        //         apis=$(apictl vcs status -e dev --format="{{ jsonPretty . }}" | jq -r '.API | .[] | .NickName')
-        //         mkdir -p upload
-        //         if [ -z "$apis" ]; 
-        //         then 
-        //             echo "======== No API Changes detected =========="; 
-        //         else 
-        //             echo "Updated APIs :"$apis
-        //             apiArray=($apis)
-        //             for i in "${apiArray[@]}"
-        //             do
-        //                 echo "$i"
-        //                 apictl bundle -s $i -d ../../.wso2apictl/exported/apis
-        //             done
-        //             apictl vcs deploy -e dev -k
-        //             rm -rf ./upload
-        //         fi
-        //         '''
-        //     }
-        // }
-
-        //Working
-        // stage('Deploy APIs To the "Dev" Environment') {
-        //     steps {
-        //         sh '''#!/bin/bash
-        //         apictl login dev -u admin -p admin -k
-        //         apis=$(apictl vcs status -e dev --format="{{ jsonPretty . }}" | jq -r '.API | .[] | .NickName')
-        //         mkdir -p upload
-        //         if [ -z "$apis" ]; 
-        //         then 
-        //             echo "======== No API Changes detected =========="; 
-        //         else 
-        //             echo "Updated APIs :"$apis
-        //             apiArray=($apis)
-        //             for i in "${apiArray[@]}"
-        //             do
-        //                 echo "$i"
-        //                 apictl bundle -s $i -d ../../.wso2apictl/exported/apis
-        //             done
-        //             apictl vcs deploy -e dev -k
-        //             rm -rf ./upload
-        //         fi
-        //         '''
-        //     }
-        // }
-
-        // stage('Build api bundles') {
-        //     steps {
-        //         sh '''#!/bin/bash
-        //         apictl login dev -u admin -p admin -k
-        //         apictl vcs status -e dev --format="{{ jsonPretty . }}"
-        //         apis=$(apictl vcs status -e dev --format="{{ jsonPretty . }}" | jq -r '.API | .[] | .NickName')
-        //         mkdir -p upload
-        //         if [ -z "$apis" ]; 
-        //         then 
-        //             echo "======== No API Changes detected =========="; 
-        //         else 
-        //             echo "Updated APIs :"$apis
-        //             apiArray=($apis)
-        //             for i in "${apiArray[@]}"
-        //             do
-        //                 echo "$i"
-        //                 apictl bundle -s $i -d ./upload
-        //                 # import the artifact
-        //                 message=$(apictl import api -f ./upload/$i.zip -e dev --update -k)
-        //                 if [ "$message" = "Successfully imported API." ]; then
-        //                     echo "Successfully imported API."
-        //                 else
-        //                     echo $message
-        //                 fi
-        //             done
-        //             rm -rf ./upload
-        //         fi
-        //         '''
-        //     }
-        // }
-
-
-        // stage('Run Tests in "Dev" Environment') {
-        //     steps {
-        //         sh '''#!/bin/bash
-        //         testfiles=\$(find tests -iname "*.sh")
-        //         for i in \$testfiles ; do bash \$i; done
-        //         '''
-        //     }
-        // }
-
-        // stage('Deploy APIs To "Prod" Environment') {
-        //     steps {
-        //         sh """
-        //         apictl login prod -u admin -p admin -k
-        //         apictl vcs deploy -e prod -k
-        //         """
-        //     }
-        // }
     }
 
-    //apictl logout prod -k
     post { 
         always { 
             sh '''
+            # Logout from the dev environment
             apictl logout dev -k
             '''
         }
