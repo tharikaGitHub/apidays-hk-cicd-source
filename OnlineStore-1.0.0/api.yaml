@@ -2,7 +2,7 @@ type: api
 version: v4.0.0
 data:
   name: OnlineStore
-  description: This is a server online store
+  description: This is a server online store API
   context: /OnlineStore
   version: 1.0.0
   provider: admin
